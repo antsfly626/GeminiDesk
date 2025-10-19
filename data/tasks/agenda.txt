@@ -1,0 +1,12 @@
+Challenge (waymo) → Nataniel + Neha (and someone else wanted?)
+This quarter: have one implementation built in (Unit Blend)
+Open scenario generation (simformer)
+Come up with some ideas to get started on (even if the categories change)
+Winter: prep for challenge (challenge starting spring break)
+Next step: Start a lit review of two papers + how to use dataset (same timeline)
+
+Scenic/Crash (Nataniel Archita)
+Add in RL training RL algorithms with and in carla using scenic
+Goal: paper draft at the end of the quarter
+First task: literature review from the scenic workshop
+Then create scenic scenarios and automate the pipeline
