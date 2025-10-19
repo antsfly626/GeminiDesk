@@ -1,5 +1,5 @@
 import flet as ft
-from styles import Colors, Spacing
+from app.styles import Colors, Spacing
 
 class UploadPanel:
     def __init__(self, page: ft.Page, on_submit):

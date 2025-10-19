@@ -1,5 +1,6 @@
 import asyncio, json, flet as ft, plotly.graph_objects as go
-from styles import Colors, Spacing
+from app.styles import Colors, Spacing
+from app.utils.api import APIClient
 
 class AgentTabs:
     def __init__(self, page, logs_queue, router_signal):

@@ -4,11 +4,12 @@ import os
 import flet as ft
 from dotenv import load_dotenv
 
-from styles import THEME, Colors, Spacing
-from components.upload_panel import UploadPanel
-from components.agent_tabs import AgentTabs
-from components.sidebar import AnalyticsSidebar
-from utils.api import APIClient, MockStream
+from app.styles import THEME, Colors, Spacing
+from app.components.upload_panel import UploadPanel
+from app.components.agent_tabs import AgentTabs
+from app.components.sidebar import AnalyticsSidebar
+from app.utils.api import APIClient, MockStream
+
 
 APP_TITLE = "GeminiDesk — Multimodal Agent Console"
 
