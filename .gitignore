@@ -7,3 +7,5 @@ token.json
 /tests/__pycache__
 
 
+credentials.json
+token.json

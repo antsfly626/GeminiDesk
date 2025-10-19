@@ -37,6 +37,42 @@ def route_text(text: str) -> dict:
             "response_mime_type": "application/json"
         }
     )
+import google.generativeai as genai
+from app.agents.ocr_agent import extract_text  # ✅ directly reuse OCR
+from dotenv import load_dotenv
+from pathlib import Path
+
+
+load_dotenv()
+
+# Configure Gemini
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+
+BASE_DIR = Path(__file__).resolve().parent  # folder of current file
+DATA_DIR = BASE_DIR.parent.parent /"data"
+
+
+SYSTEM_PROMPT = """
+You are a document classifier. Analyze the following text and decide the best agent:
+- NoteAgent: organizes notes
+- FinanceAgent: extracts receipts and budgets
+- TaskAgent: schedules tasks
+- EventAgent: adds events to calendar
+
+Return JSON only in this format:
+{"agent": "<AgentName>", "confidence": <float>, "content": "<short description>"}
+"""
+
+def route_text(text: str) -> dict:
+    """Send text to Gemini and return structured JSON classification."""
+    model = genai.GenerativeModel(
+        "models/gemini-2.5-flash",
+        generation_config={
+            "temperature": 0.2,
+            "response_mime_type": "application/json"
+        }
+    )
     response = model.generate_content(SYSTEM_PROMPT + "\n\nText:\n" + text[:4000])
     return json.loads(response.text.strip())
 

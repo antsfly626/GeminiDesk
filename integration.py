@@ -1,18 +1,15 @@
 # integration.py
 import os
 import json
-from app.agents.ocr_agent import extract_text
-from app.agents.router_agent import route_text
+import asyncio
+
+from app.agents.ocr_agent import extract_text               # OCR for router
+from app.agents.router_agent import route_text              # Router
 from app.agents.cal_agent import parse_with_gemini, create_calendar_event
+from app.agents.task_agent import parse as parse_task       # Task Agent
+from app.agents.note_agent import run_note_agent # Note Agent
 
-# ✅ Ensure correct base directory
 BASE_DIR = os.path.dirname(__file__)
-
-# DATA_DIR = os.path.join(BASE_DIR, "data", "finance")
-# test_file = os.path.join(DATA_DIR, "boba_reciept.jpg")
-
-# DATA_DIR = os.path.join(BASE_DIR, "data", "events")
-# test_file = os.path.join(DATA_DIR, "pinterest_trip.txt")
 
 DATA_DIR = os.path.join(BASE_DIR, "data", "notes")
 test_file = os.path.join(DATA_DIR, "cse130_note.jpg")
@@ -24,19 +21,22 @@ print(f"📂 Exists? {os.path.exists(test_file)}")
 if not os.path.exists(test_file):
     raise FileNotFoundError(f"❌ Missing test file: {test_file}")
 
-# 1️⃣ OCR Extraction
-print("\n🧠 Extracting text...")
+print("\n🧠 Extracting text with OCR Agent...")
 text = extract_text(test_file)
 print(f"📜 Extracted text ({len(text)} chars): {text[:400]}...\n")
 
-# 2️⃣ Route to correct agent
 print("🤖 Routing text to correct agent...")
 routing = route_text(text)
 print("🔎 Router decision:", json.dumps(routing, indent=2))
 
-# 3️⃣ Dispatch to the appropriate agent
-agent = routing["agent"]
+agent = routing.get("agent", "")
+confidence = routing.get("confidence", 0)
 
+if not agent or confidence < 0.5:
+    print("\n🤷 Unknown or low-confidence route. Skipping.")
+    exit()
+
+# 📅 Event Agent
 if agent == "EventAgent":
     print("\n📅 Detected event! Sending to Calendar Agent...")
     parsed = parse_with_gemini(text)
@@ -47,19 +47,29 @@ if agent == "EventAgent":
     except Exception as e:
         print("❌ Calendar creation failed:", e)
 
+# 🗓️ Task Agent
 elif agent == "TaskAgent":
-    print("\n🗓️ Detected task! (You can connect your Notion Task agent here later.)")
+    print("\n🗓️ Detected task! Sending to Task Agent...")
+    try:
+        result = asyncio.run(parse_task({"text": text}))
+        print("✅ TaskAgent result:")
+        print(json.dumps(result, indent=2))
+    except Exception as e:
+        print("❌ TaskAgent failed:", e)
 
+# 📝 Note Agent
 elif agent == "NoteAgent":
-    print("\n📝 Detected note/document. Would be saved in Notes system.")
+    print("\n📝 Detected note/document! Sending to NoteAgent (Notion Document Hub)...")
+    try:
+        result = run_note_agent(test_file, category="Planning")
+        print("✅ NoteAgent uploaded document:")
+        print(json.dumps(result, indent=2))
+    except Exception as e:
+        print("❌ NoteAgent failed:", e)
 
+# 💰 Finance Agent
 elif agent == "FinanceAgent":
-    print("\n💰 Detected finance/receipt. Sending to Fetch.ai Finance Agent...")
-    from app.agents.fetch_finance_agent import call_fetch_finance_agent
-    import asyncio
-
-    parsed = asyncio.run(call_fetch_finance_agent(text))
-    print(json.dumps(parsed, indent=2))
+    print("\n💰 Detected finance/receipt. Would be processed by Finance Agent.")
 
 else:
-    print("\n🤷 Unknown agent. Router confidence too low.")
+    print(f"\n🤷 Unknown agent type: {agent}")
