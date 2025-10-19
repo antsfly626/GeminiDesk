@@ -1,43 +1,55 @@
+# app/agents/router_agent.py
 import os
 import json
-from google import genai
+import google.generativeai as genai
+from app.agents.ocr_agent import extract_text  # ✅ directly reuse OCR
 
-class RouterAgent:
-    def __init__(self, api_key=None):
-        self.client = genai.Client(api_key=api_key or os.getenv("GEMINI_API_KEY"))
+# Configure Gemini
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-    def classify_document(self, image_path: str) -> dict:
-        """
-        Sends the image to Gemini and returns structured JSON:
-        {
-          "agent": "<AgentName>",
-          "confidence": <float between 0 and 1>,
-          "content": "<short description of text>"
+DATA_DIR = r"C:\Users\nehah\GeminiDesk\GeminiDesk\data"
+
+SYSTEM_PROMPT = """
+You are a document classifier. Analyze the following text and decide the best agent:
+- NoteAgent: organizes notes
+- FinanceAgent: extracts receipts and budgets
+- TaskAgent: schedules tasks
+- EventAgent: adds events to calendar
+
+Return JSON only in this format:
+{"agent": "<AgentName>", "confidence": <float>, "content": "<short description>"}
+"""
+
+def route_text(text: str) -> dict:
+    """Send text to Gemini and return structured JSON classification."""
+    model = genai.GenerativeModel(
+        "models/gemini-2.5-flash",
+        generation_config={
+            "temperature": 0.2,
+            "response_mime_type": "application/json"
         }
-        """
-        prompt = """
-        You are a document classifier. 
-        Take an image and determine if it’s a handwritten note, a receipt, or a flyer.
-        Return structured JSON only in this format:
-        {
-          "agent": "<AgentName>",
-          "confidence": <float between 0 and 1>,
-          "content": "<short description of text>"
-        }
-        """
+    )
+    response = model.generate_content(SYSTEM_PROMPT + "\n\nText:\n" + text[:4000])
+    return json.loads(response.text.strip())
 
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[{
-                "role": "user",
-                "parts": [
-                    {"text": prompt},
-                    {"file_data": {"mime_type": "image/jpeg", "file_uri": f"file:///{image_path}"}}
-                ]
-            }]
-        )
+if __name__ == "__main__":
+    print(f"\n📂 Scanning all files in: {DATA_DIR}")
+    for file in os.listdir(DATA_DIR):
+        fpath = os.path.join(DATA_DIR, file)
+        if not os.path.isfile(fpath):
+            continue
 
+        print(f"\n🔍 Processing and routing: {file}")
         try:
-            return json.loads(response.text)
-        except json.JSONDecodeError:
-            return {"error": "Failed to parse JSON", "raw": response.text}
+            # 1️⃣ Extract text first (works for both images & text files)
+            text = extract_text(fpath)
+            if not text.strip():
+                print(f"[Router Agent] ⚠️ No text extracted from {file}, skipping.")
+                continue
+
+            # 2️⃣ Route text to correct agent
+            result = route_text(text)
+            print(json.dumps(result, indent=2))
+
+        except Exception as e:
+            print(f"[Router Agent] ❌ Failed on {file}: {e}")
