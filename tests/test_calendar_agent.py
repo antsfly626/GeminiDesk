@@ -1,6 +1,6 @@
 import requests
 
-file_path = "../../data/event_test.txt" 
+file_path = "d:/Projects/tedai-gemini-desk/data/events/pinterest_trip.txt"
 with open(file_path, "r") as f:
     text = f.read().strip()
 

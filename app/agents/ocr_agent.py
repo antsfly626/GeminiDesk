@@ -3,11 +3,20 @@ import os
 from PIL import Image
 import google.generativeai as genai
 from io import BytesIO
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent  # folder of current file
+DATA_DIR = BASE_DIR.parent.parent /"data"
+
+print(DATA_DIR)
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-DATA_DIR = r"C:\Users\nehah\GeminiDesk\GeminiDesk\data"
+# DATA_DIR = r"/data/events"
 
 def extract_text(file_path: str) -> str:
     """Extract text or OCR content from any file using Gemini."""
@@ -29,7 +38,7 @@ def extract_text(file_path: str) -> str:
             "from this image as Markdown. Use $$...$$ for math and Markdown formatting."
         )
 
-        # ✅ Force-clean the image buffer (prevents MPO issue)
+        # ✅ Force-clean the image buffer (prevents pip install google-generativeaiMPO issue)
         with Image.open(file_path) as img:
             if hasattr(img, "n_frames") and img.n_frames > 1:
                 img.seek(0)

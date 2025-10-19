@@ -5,7 +5,9 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from google import genai
 from google.genai.types import GenerateContentConfig, Schema, Type
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Make sure GOOGLE_API_KEY is set in your .env or environment
 client = genai.Client()
@@ -66,7 +68,7 @@ def parse_with_gemini(text: str) -> Dict[str, Any]:
     )
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="models/gemini-2.5-flash-lite",
         contents=prompt,
         config=config
     )
