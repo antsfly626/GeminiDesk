@@ -8,14 +8,14 @@ from app.agents.cal_agent import parse_with_gemini, create_calendar_event
 # ✅ Ensure correct base directory
 BASE_DIR = os.path.dirname(__file__)
 
-DATA_DIR = os.path.join(BASE_DIR, "data", "finance")
-test_file = os.path.join(DATA_DIR, "boba_reciept.jpg")
+# DATA_DIR = os.path.join(BASE_DIR, "data", "finance")
+# test_file = os.path.join(DATA_DIR, "boba_reciept.jpg")
 
 # DATA_DIR = os.path.join(BASE_DIR, "data", "events")
 # test_file = os.path.join(DATA_DIR, "pinterest_trip.txt")
 
-# DATA_DIR = os.path.join(BASE_DIR, "data", "notes")
-# test_file = os.path.join(DATA_DIR, "cse130_note.jpg")
+DATA_DIR = os.path.join(BASE_DIR, "data", "notes")
+test_file = os.path.join(DATA_DIR, "cse130_note.jpg")
 
 print(BASE_DIR)
 print(f"🔍 File: {test_file}")
