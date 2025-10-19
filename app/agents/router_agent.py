@@ -3,11 +3,19 @@ import os
 import json
 import google.generativeai as genai
 from app.agents.ocr_agent import extract_text  # ✅ directly reuse OCR
+from dotenv import load_dotenv
+from pathlib import Path
+
+
+load_dotenv()
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-DATA_DIR = r"C:\Users\nehah\GeminiDesk\GeminiDesk\data"
+
+BASE_DIR = Path(__file__).resolve().parent  # folder of current file
+DATA_DIR = BASE_DIR.parent.parent /"data"
+
 
 SYSTEM_PROMPT = """
 You are a document classifier. Analyze the following text and decide the best agent:
