@@ -1,6 +1,8 @@
 import asyncio, json, flet as ft, plotly.graph_objects as go
 from app.styles import Colors, Spacing
 from app.utils.api import APIClient
+from flet.plotly_chart import PlotlyChart
+# import flet_webview as ftwv
 
 class AgentTabs:
     def __init__(self, page, logs_queue, router_signal):
@@ -10,16 +12,16 @@ class AgentTabs:
 
         self.notes_md = ft.Markdown(value="", extension_set=ft.MarkdownExtensionSet.GITHUB_WEB)
         self.tasks = ft.ListView(auto_scroll=True, expand=True)
-        self.budget_chart = ft.PlotlyChart(self._pie({"Travel":3, "Meals":2, "Misc":1}), expand=True)
+        self.budget_chart = PlotlyChart(self._pie({"Travel":3, "Meals":2, "Misc":1}), expand=True)
         self.logs = ft.ListView(expand=True, spacing=4, auto_scroll=True)
-        self.diagram_frame = ft.IFrame(src="", height=400, border_radius=12)
+        # self.diagram_frame = ft.Html(content="", height=400, border_radius=12)
 
         self.tabs = ft.Tabs(scrollable=True, expand=True, tabs=[
-            ft.Tab(text="Notes", icon=ft.icons.NOTE, content=self.notes_md),
-            ft.Tab(text="Tasks", icon=ft.icons.CHECKLIST, content=self.tasks),
-            ft.Tab(text="Budget", icon=ft.icons.SAVINGS, content=self.budget_chart),
-            ft.Tab(text="Logs", icon=ft.icons.TERMINAL, content=self.logs),
-            ft.Tab(text="Diagram", icon=ft.icons.HUB, content=self.diagram_frame),
+            ft.Tab(text="Notes", icon=ft.Icons.NOTE, content=self.notes_md),
+            ft.Tab(text="Tasks", icon=ft.Icons.CHECKLIST, content=self.tasks),
+            ft.Tab(text="Budget", icon=ft.Icons.SAVINGS, content=self.budget_chart),
+            ft.Tab(text="Logs", icon=ft.Icons.TERMINAL, content=self.logs),
+            # ft.Tab(text="Diagram", icon=ft.Icons.HUB, content=self.diagram_frame),
         ])
 
         self.view = ft.Container(self.tabs, bgcolor=Colors.SURFACE, padding=Spacing.MD, border_radius=12)

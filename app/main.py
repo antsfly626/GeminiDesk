@@ -42,21 +42,21 @@ async def main(page: ft.Page):
 
     drawer = ft.NavigationDrawer(
         controls=[
-            ft.NavigationDrawerDestination(icon=ft.icons.INSIGHTS, label="Analytics"),
-            ft.NavigationDrawerDestination(icon=ft.icons.NOTE, label="Notes"),
-            ft.NavigationDrawerDestination(icon=ft.icons.TASK, label="Tasks"),
-            ft.NavigationDrawerDestination(icon=ft.icons.MONETIZATION_ON, label="Budget"),
+            ft.NavigationDrawerDestination(icon=ft.Icons.INSIGHTS, label="Analytics"),
+            ft.NavigationDrawerDestination(icon=ft.Icons.NOTE, label="Notes"),
+            ft.NavigationDrawerDestination(icon=ft.Icons.TASK, label="Tasks"),
+            ft.NavigationDrawerDestination(icon=ft.Icons.MONETIZATION_ON, label="Budget"),
         ]
     )
     page.drawer = drawer
 
     def build_layout():
         page.controls.clear()
-        width = page.window_width or 1080
+        width = page.width or 1080
         is_mobile = width < 700
 
         appbar = ft.AppBar(
-            leading=ft.IconButton(ft.icons.MENU, on_click=lambda e: page.open_drawer()),
+            leading=ft.IconButton(ft.Icons.MENU, on_click=lambda e: page.open_drawer()),
             title=ft.Text(APP_TITLE, weight=ft.FontWeight.W_600),
             bgcolor=Colors.SURFACE,
         )
@@ -93,7 +93,7 @@ async def main(page: ft.Page):
     build_layout()
 
     async def run_background():
-        ws_ok = await api.try_ws(state.logs_queue)
+        ws_ok = True # await api.try_ws(state.logs_queue)
         if not ws_ok:
             asyncio.create_task(api.poll_logs(state.logs_queue))
         if os.getenv("DEV_MOCK", "1") == "1":
