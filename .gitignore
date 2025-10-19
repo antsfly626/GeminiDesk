@@ -1,1 +1,6 @@
 /.env
+/app/__pycache__
+/app/agents/__pycache__
+
+credentials.json
+token.json
