@@ -1,6 +1,5 @@
 /.env
-../../../d:/Projects/tedai-gemini-desk/app/agents/__pycache__
-../../../d:/Projects/tedai-gemini-desk/app/__pycache__
+/app/__pycache__
+/tests/__pycache__
 
-../../../d:/Projects/tedai-gemini-desk/app/components/__pycache__
 
