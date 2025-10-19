@@ -28,9 +28,9 @@ class KPI(ft.Container):
 class AnalyticsSidebar:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.kpi_notes = KPI("Notes", 0, ft.icons.NOTE)
-        self.kpi_tasks = KPI("Tasks", 0, ft.icons.CHECK_CIRCLE)
-        self.kpi_receipts = KPI("Receipts", 0, ft.icons.RECEIPT_LONG)
+        self.kpi_notes = KPI("Notes", 0, ft.Icons.NOTE)
+        self.kpi_tasks = KPI("Tasks", 0, ft.Icons.CHECK_CIRCLE)
+        self.kpi_receipts = KPI("Receipts", 0, ft.Icons.RECEIPT_LONG)
 
         self.view = ft.ResponsiveRow(
             [

@@ -1,5 +1,6 @@
 import flet as ft
 from app.styles import Colors, Spacing
+from app.agents.router_agent import RouterAgent
 
 class UploadPanel:
     def __init__(self, page: ft.Page, on_submit):
@@ -35,7 +36,7 @@ class UploadPanel:
         )
 
         self.submit_btn = ft.FloatingActionButton(
-            icon=ft.icons.SEND, text="Send", on_click=lambda e: self._submit(),
+            icon=ft.Icons.SEND, text="Send", on_click=lambda e: self._submit(),
         )
 
         self.view = ft.Column(
@@ -43,7 +44,7 @@ class UploadPanel:
                 ft.Row([
                     ft.Text("Upload", weight=ft.FontWeight.W_600, size=18),
                     ft.Container(expand=True),
-                    ft.IconButton(ft.icons.UPLOAD_FILE, tooltip="Pick files", on_click=lambda e: self.fp.pick_files(allow_multiple=True)),
+                    ft.IconButton(ft.Icons.UPLOAD_FILE, tooltip="Pick files", on_click=lambda e: self.fp.pick_files(allow_multiple=True)),
                 ]),
                 self.drop,
                 self.previews,
@@ -51,7 +52,6 @@ class UploadPanel:
                 self.submit_btn,
             ],
             spacing=Spacing.MD,
-            responsive=True,
         )
 
     def _on_pick(self, e: ft.FilePickerResultEvent):
@@ -77,5 +77,20 @@ class UploadPanel:
         self.previews.update()
 
     def _submit(self):
-        payload = {"text": self.text_input.value, "files": [{"name": f.name} for f in self.files]}
+        agent = RouterAgent()  # instantiate your agent
+        results = []
+
+        # Process each uploaded file through the agent
+        for f in self.files:
+            # You might need the full path if using local files
+            file_path = f.path or f.name
+            result = agent.classify_document(file_path)
+            results.append(result)
+
+        payload = {
+            "text": self.text_input.value,
+            "files": [{"name": f.name, "result": res} for f, res in zip(self.files, results)]
+        }
+
+        # Call the original on_submit callback with structured results
         self.on_submit(payload)
